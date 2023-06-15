@@ -1,0 +1,28 @@
+library(imager)
+library(tidyverse)
+library(rvest)
+#Question a
+flip = function(x) {
+  mat = as.array(x[,,1,])
+  dimen= dim(mat)
+  rev = array(0,dim = dimen)
+  
+  for(i in 1:dimen[1]) {
+    for(j in 1:dimen[2]){
+      rev[dimen[1]-i, j, ] = mat[i,j,]
+    }
+  }
+  return(as.cimg(rev))
+  
+}
+
+#d
+
+html= read_html("https://stats.stackexchange.com/questions?tab=Votes")
+titles = html%>%html_elements(".s-post-summary--content-title a")%>%html_text()
+#views = html%>%html_elements(".s-user-card--rep span")%>%html_text()
+ans = html%>%html_elements(".s-post-summary--stats-item-number")%>%html_text()
+vote = ans[seq_along(ans) %%3 == 1]
+ans = ans[seq_along(ans) %%3 == 2]
+views = ans[seq_along(ans) %%3 == 0]
+data=data.frame(Title=titles, Views=views,Answers=ans,Votes=vote)
